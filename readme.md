@@ -1,25 +1,16 @@
 # 油猴文章拷贝助手
 
+![image.png](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/5f1e838aaab74cb6b7225da6fe0f2e27~tplv-k3u1fbpfcp-watermark.image?)
+
 ## 为什么要写这个脚本
 
 ### 流程
 
-```mermaid
-graph LR
-掘金 -->|html2markdown| markdown
-markdown -->|复制| mdnice
-mdnice -->|复制| 微信公众平台
-```
+![image.png](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/dfe441fddf414f5a879df3ad41855ecd~tplv-k3u1fbpfcp-watermark.image?)
 
 ### 使用脚本流程
 
-```mermaid
-graph LR
-掘金 -->|html2markdown| markdown
-markdown -->|复制| mdnice
-mdnice -->|复制| 微信公众平台
-掘金 -->|油猴脚本| 微信公众平台
-```
+![image.png](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/834b742b0a814286b040942f2548d011~tplv-k3u1fbpfcp-watermark.image?)
 
 ### HTML 转 markdown
 
@@ -47,3 +38,13 @@ https://github.com/mixmark-io/turndown
 - [ ] 思否
 
 - [ ] CSDN
+
+---
+
+## 留言反馈
+
+关注微信公众号
+
+**JS 酷**
+
+加我微信好友反馈，备注来源
