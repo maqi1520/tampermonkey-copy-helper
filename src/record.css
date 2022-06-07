@@ -1,0 +1,38 @@
+.record-conainer {
+  position: fixed;
+  top: 100px;
+  right: 0;
+  border: 2px solid #8e8e90;
+  background: #dbe5f9;
+  z-index: 100;
+  padding: 20px 50px;
+}
+.ui-btn {
+  margin-right: 10px;
+  background-color: #ff9900;
+  font-family: inherit;
+  padding: 0.6em 1.3em;
+  font-weight: 900;
+  font-size: 18px;
+  border: 3px solid black;
+  border-radius: 0.4em;
+  box-shadow: 0.1em 0.1em;
+}
+
+.btn-stop {
+  background-color: #fbca1f;
+}
+
+.btn-clear {
+  background-color: transparent;
+}
+
+.ui-btn:hover {
+  transform: translate(-0.05em, -0.05em);
+  box-shadow: 0.15em 0.15em;
+}
+
+.ui-btn:active {
+  transform: translate(0.05em, 0.05em);
+  box-shadow: 0.05em 0.05em;
+}

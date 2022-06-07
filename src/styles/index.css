@@ -1,3 +1,6 @@
+.cp-modal-wrapper * {
+  box-sizing: content-box;
+}
 .cp-tool .side-btn {
   width: 40px;
   position: fixed;
@@ -11,6 +14,15 @@
   padding: 6px 10px;
   color: #fff;
   box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+  border-radius: 2px;
+  display: inline-block;
+}
+
+.cp-tool .cp-btn-default {
+  border: 1px solid #d8d8d8;
+  padding: 6px 10px;
+  color: #333;
   cursor: pointer;
   border-radius: 2px;
   display: inline-block;
@@ -119,6 +131,7 @@
   width: 309px;
   height: 666px;
   padding: 8px 10px;
+  box-sizing: content-box;
 }
 .preview-article-wrapper_5_8 {
   border-radius: 38px;

@@ -11,6 +11,10 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@babel/core": "^7.17.0",
+    "@babel/preset-env": "^7.16.11",
+    "@babel/preset-react": "^7.16.7",
+    "babel-loader": "^8.2.3",
     "css-loader": "^6.6.0",
     "style-loader": "^3.3.1",
     "webpack": "^5.68.0",
@@ -19,6 +23,11 @@
   },
   "dependencies": {
     "juice": "^8.0.0",
-    "lodash.get": "^4.4.2"
+    "lodash.get": "^4.4.2",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-media-recorder": "^1.6.3",
+    "turndown": "^7.1.1",
+    "turndown-plugin-gfm": "^1.0.2"
   }
 }

@@ -1,5 +1,7 @@
 import get from "lodash.get";
 import { themes } from "./themes";
+import { turndown } from "./turndown";
+import { processDocument } from "./playform";
 import {
   solveWeChatMath,
   solveHtml,
@@ -20,9 +22,13 @@ const selector = {
   "juejin.cn": ".markdown-body",
   "blog.csdn.net": "#content_views",
   "segmentfault.com": ".article.fmt.article-content",
+  "mp.weixin.qq.com": "#js_content",
+  "zhuanlan.zhihu.com": ".Post-RichText",
 };
 
 let themeId = localStorage.getItem("copy_tool_themeId") || "1";
+
+const hostname = window.location.hostname;
 
 function appendThemeStyle(id) {
   Array.from(document.querySelectorAll(".toolbox-option")).forEach((node) => {
@@ -84,13 +90,16 @@ function init() {
       <div class="preview-toolbox">
       <div class="copy-btn tool-item">
       <div class="cp-btn js-copy-wechat">复制到微信</div>
-      <div class="cp-btn js-copy-zhihu">复制到知乎</div>
       <div class="cp-btn js-copy-md">复制 markdown</div>
       
   </div>
           
           <div class="tool-item"><div class="tool-item-label">下载</div><div>
           <div class="cp-btn js-download-md">下载 markdown</div>
+          </div></div>
+          <div class="tool-item"><div class="tool-item-label">排版工具</div><div>
+          <a target="_black" href="https://editor.mdnice.com/" class="cp-btn-default">mdnice</a>
+          <a target="_black" href="https://editor.runjs.cool/" class="cp-btn">mdx-editor</a>
           </div></div>
           <div class="tool-item"><div class="tool-item-label">主题</div><div class="toolbox-select">
   
@@ -133,13 +142,30 @@ function init() {
   document.body.appendChild(div);
 }
 
+function getMd() {
+  let md = get(
+    window,
+    "__NUXT__.state.view.column.entry.article_info.mark_content"
+  );
+  const selectorStr = selector[hostname] || ".markdown-body";
+
+  const nodeConetnt = document.querySelector(selectorStr).cloneNode(true);
+
+  processDocument[hostname] && processDocument[hostname](nodeConetnt);
+
+  processDocument["juejin.cn"](nodeConetnt);
+
+  md = turndown(nodeConetnt.innerHTML);
+  return md;
+}
+
 function handleClick(e) {
   const target = e.target;
   if (target.className.includes("side-btn")) {
     document.querySelector(".cp-modal-wrapper").style.display = "block";
-    const hostname = selector[window.location.hostname] || ".markdown-body";
-    console.log(hostname);
-    const nodes = document.querySelector(hostname).cloneNode(true).children;
+    const selectorStr = selector[hostname] || ".markdown-body";
+    console.log(selectorStr);
+    const nodes = document.querySelector(selectorStr).cloneNode(true).children;
 
     document.querySelector("#nice").innerHTML = "";
     const markdownBody = document.createElement("div");
@@ -209,41 +235,16 @@ function handleClick(e) {
     copySafari(html);
     alert("复制成功，请到微信公众平台粘贴");
   }
-  if (target.className.includes("js-copy-zhihu")) {
-    const currentTheme = themes.find((item) => item.themeId === themeId);
-    const mdcss = currentTheme.css;
-
-    const element = document.querySelector("#nice");
-    const el = element.cloneNode(true);
-    solveZhihuMath(el);
-    const html = solveHtml(el, mdcss);
-    copySafari(html);
-    alert("复制成功，请到知乎粘贴");
-  }
   if (target.className.includes("js-copy-md")) {
-    const md = get(
-      window,
-      "__NUXT__.state.view.column.entry.article_info.mark_content"
-    );
-    if (md) {
-      copySafari(md);
-      alert("复制 markdown 成功");
-    } else {
-      alert("由于作者写的并非 markdown，还在开发中");
-    }
+    let md = getMd();
+    copySafari(md);
+    alert("复制 markdown 成功");
   }
   if (target.className.includes("js-download-md")) {
-    const md = get(
-      window,
-      "__NUXT__.state.view.column.entry.article_info.mark_content"
-    );
-    if (md) {
-      const h1 = document.querySelector("h1");
-      const title = h1 ? h1.innerText + ".md" : "H1 is null.md";
-      downLoad(title, md);
-    } else {
-      alert("由于作者写的并非markdonw，还在开发中");
-    }
+    const md = getMd();
+    const h1 = document.querySelector("h1");
+    const title = h1 ? h1.innerText + ".md" : "H1 is null.md";
+    downLoad(title, md);
   }
 }
 
