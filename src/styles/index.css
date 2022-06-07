@@ -1,5 +1,6 @@
 .cp-modal-wrapper * {
   box-sizing: content-box;
+  font-size: 12px;
 }
 .cp-tool .side-btn {
   width: 40px;
