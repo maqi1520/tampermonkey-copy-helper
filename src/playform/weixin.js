@@ -13,7 +13,8 @@ export const processDocument = (dom) => {
   for (const img of Array.from(dom.querySelectorAll("img"))) {
     if (
       !img.getAttribute("src") ||
-      img.getAttribute("class").includes("img_loading")
+      (img.getAttribute("class") &&
+        img.getAttribute("class").includes("img_loading"))
     ) {
       img.removeAttribute("class");
       img.setAttribute("src", img.dataset?.src || "");

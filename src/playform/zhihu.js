@@ -6,7 +6,7 @@ export const processDocument = (dom) => {
   for (const img of Array.from(dom.querySelectorAll("img"))) {
     if (
       !img.getAttribute("src") ||
-      img.getAttribute("class").includes("lazy")
+      (img.getAttribute("class") && img.getAttribute("class").includes("lazy"))
     ) {
       img.removeAttribute("class");
       img.setAttribute("src", img.dataset?.original || "");
