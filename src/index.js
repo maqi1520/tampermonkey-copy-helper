@@ -1,8 +1,10 @@
 // ==UserScript==
 // @name         copy-helper
-// @namespace    https://github.com/maqi1520/tampermonkey-copy-helper
-// @version      0.8.1
-// @description  文章拷贝助手，掘金、简书、微信文章、知乎专栏、思否、CSDN 文章一键拷贝 markdown，欢迎关注 前端公众号：JS酷
+// @namespace    https://greasyfork.org/zh-CN/users/869004
+// @homepage    https://greasyfork.org/zh-CN/scripts/439663
+// @sourcecode    https://github.com/maqi1520/tampermonkey-copy-helper
+// @version      0.9.0
+// @description  文章拷贝助手，掘金、简书、微信文章、知乎专栏、思否、CSDN、新华网、人民网、 文章一键拷贝 markdown，欢迎关注 前端公众号：JS酷
 // @author       #前端公众号：JS酷
 // @match        https://juejin.cn/post/*
 // @match        https://blog.csdn.net/*/article/details/*
@@ -10,6 +12,8 @@
 // @match        https://segmentfault.com/a/*
 // @match        https://mp.weixin.qq.com/s*
 // @match        https://zhuanlan.zhihu.com/p/*
+// @match        *://www.news.cn/*/**/*.html
+// @match        *://*.people.com.cn/*/**/*.html
 // @icon         https://res.wx.qq.com/a/fed_upload/9300e7ac-cec5-4454-b75c-f92260dd5b47/logo-mp.ico
 // @grant        none
 // @license MIT
@@ -41,11 +45,21 @@ const selector = {
   "segmentfault.com": ".article.fmt.article-content",
   "mp.weixin.qq.com": "#js_content",
   "zhuanlan.zhihu.com": ".Post-RichText",
+  "www.news.cn": "#detail",
+  "people.com.cn": ".rm_txt_con",
 };
 
 let themeId = localStorage.getItem("copy_tool_themeId") || "1";
 
 const hostname = window.location.hostname;
+
+let hostkey = "";
+for (const key in processDocument) {
+  if (hostname.includes(key)) {
+    hostkey = key;
+    break;
+  }
+}
 
 function appendThemeStyle(id) {
   Array.from(document.querySelectorAll(".toolbox-option")).forEach((node) => {
@@ -91,7 +105,7 @@ function init() {
           </div>
           <div class="preview-article-article preview-article-article_5_8">
           <div class="preview-article-article-header">
-          <h1 class="rich_media_title" id="js-title"></h1>
+          <div class="rich_media_title" id="js-title"></div>
                   <div id="meta_content" class="rich_media_meta_list">
                   <span id="js-author" class="rich_media_meta rich_media_meta_text"></span>               
                   <span class="rich_media_meta rich_media_meta_nickname" id="profileBt" wah-hotarea="click">
@@ -164,13 +178,11 @@ function getMd() {
     window,
     "__NUXT__.state.view.column.entry.article_info.mark_content"
   );
-  const selectorStr = selector[hostname] || ".markdown-body";
+  const selectorStr = selector[hostkey] || ".markdown-body";
 
   const nodeConetnt = document.querySelector(selectorStr).cloneNode(true);
 
-  processDocument[hostname] && processDocument[hostname](nodeConetnt);
-
-  processDocument["juejin.cn"](nodeConetnt);
+  processDocument[hostkey] && processDocument[hostkey](nodeConetnt);
 
   md = turndown(nodeConetnt.innerHTML);
   return md;
@@ -180,7 +192,7 @@ function handleClick(e) {
   const target = e.target;
   if (target.className.includes("side-btn")) {
     document.querySelector(".cp-modal-wrapper").style.display = "block";
-    const selectorStr = selector[hostname] || ".markdown-body";
+    const selectorStr = selector[hostkey] || ".markdown-body";
     console.log(selectorStr);
     const nodes = document.querySelector(selectorStr).cloneNode(true).children;
 
@@ -216,16 +228,20 @@ function handleClick(e) {
         markdownBody.appendChild(node);
       }
     });
-    const h1 = document.querySelector("h1");
+    const h1 =
+      document.querySelectorAll("h1")[
+        document.querySelectorAll("h1")?.length - 1
+      ];
+
     const author = document.querySelector(".name");
     console.log(author);
 
     document.querySelector("#js-title").innerHTML = h1
       ? h1.innerText
-      : "h1 获取标题失败";
+      : "H1 获取标题失败";
     document.querySelector("#js-author").innerHTML = author
       ? author.innerText
-      : "作者获取失败";
+      : "作者";
     document.querySelector("#nice").appendChild(markdownBody);
     document.body.style.overflow = "hidden";
   }
@@ -268,3 +284,5 @@ function handleClick(e) {
 init();
 appendThemeStyle(themeId);
 document.addEventListener("click", handleClick);
+
+console.log(123);

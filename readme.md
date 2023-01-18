@@ -75,6 +75,10 @@ export const downLoad = (filename, code) => {
 
 -[ ] CSDN
 
+-[ ] 新华网
+
+-[ ] 人民网
+
 ---
 
 ## Github
