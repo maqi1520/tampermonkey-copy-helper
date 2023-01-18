@@ -1,8 +1,10 @@
 // ==UserScript==
 // @name         copy-helper
-// @namespace    https://github.com/maqi1520/tampermonkey-copy-helper
-// @version      0.8.1
-// @description  文章拷贝助手，掘金、简书、微信文章、知乎专栏、思否、CSDN 文章一键拷贝 markdown，欢迎关注 前端公众号：JS酷
+// @namespace    https://greasyfork.org/zh-CN/users/869004
+// @homepage    https://greasyfork.org/zh-CN/scripts/439663
+// @sourcecode    https://github.com/maqi1520/tampermonkey-copy-helper
+// @version      0.9.0
+// @description  文章拷贝助手，掘金、简书、微信文章、知乎专栏、思否、CSDN、新华网、人民网、 文章一键拷贝 markdown，欢迎关注 前端公众号：JS酷
 // @author       #前端公众号：JS酷
 // @match        https://juejin.cn/post/*
 // @match        https://blog.csdn.net/*/article/details/*
@@ -10,6 +12,8 @@
 // @match        https://segmentfault.com/a/*
 // @match        https://mp.weixin.qq.com/s*
 // @match        https://zhuanlan.zhihu.com/p/*
+// @match        *://www.news.cn/*/**/*.html
+// @match        *://*.people.com.cn/*/**/*.html
 // @icon         https://res.wx.qq.com/a/fed_upload/9300e7ac-cec5-4454-b75c-f92260dd5b47/logo-mp.ico
 // @grant        none
 // @license MIT
@@ -23897,7 +23901,17 @@ var jianshu_processDocument = function processDocument(dom) {
     }
   });
 };
+;// CONCATENATED MODULE: ./src/playform/news.js
+var news_processDocument = function processDocument(dom) {
+  dom.querySelectorAll(".section-common-share-wrap,#DH-PLAYERID0,.tiyi1").forEach(function (el) {
+    return el.remove();
+  });
+  dom.querySelectorAll("img").forEach(function (el) {
+    el.setAttribute("src", el.src);
+  });
+};
 ;// CONCATENATED MODULE: ./src/playform/index.js
+
 
 
 
@@ -23907,11 +23921,12 @@ var jianshu_processDocument = function processDocument(dom) {
 var playform_processDocument = {
   "mp.weixin.qq.com": weixin_processDocument,
   "zhuanlan.zhihu.com": zhihu_processDocument,
-  "jianshu.com": processDocument,
-  "www.jianshu.com": jianshu_processDocument,
+  "jianshu.com": jianshu_processDocument,
   "juejin.cn": processDocument,
   "blog.csdn.net": csdn_processDocument,
-  "segmentfault.com": sf_processDocument
+  "segmentfault.com": sf_processDocument,
+  "www.news.cn": news_processDocument,
+  "people.com.cn": news_processDocument
 };
 // EXTERNAL MODULE: ./node_modules/juice/client.js
 var client = __webpack_require__(6094);
@@ -24155,9 +24170,11 @@ function src_arrayLikeToArray(arr, len) { if (len == null || len > arr.length) l
 
 // ==UserScript==
 // @name         copy-helper
-// @namespace    https://github.com/maqi1520/tampermonkey-copy-helper
-// @version      0.8.1
-// @description  文章拷贝助手，掘金、简书、微信文章、知乎专栏、思否、CSDN 文章一键拷贝 markdown，欢迎关注 前端公众号：JS酷
+// @namespace    https://greasyfork.org/zh-CN/users/869004
+// @homepage    https://greasyfork.org/zh-CN/scripts/439663
+// @sourcecode    https://github.com/maqi1520/tampermonkey-copy-helper
+// @version      0.9.0
+// @description  文章拷贝助手，掘金、简书、微信文章、知乎专栏、思否、CSDN、新华网、人民网、 文章一键拷贝 markdown，欢迎关注 前端公众号：JS酷
 // @author       #前端公众号：JS酷
 // @match        https://juejin.cn/post/*
 // @match        https://blog.csdn.net/*/article/details/*
@@ -24165,6 +24182,8 @@ function src_arrayLikeToArray(arr, len) { if (len == null || len > arr.length) l
 // @match        https://segmentfault.com/a/*
 // @match        https://mp.weixin.qq.com/s*
 // @match        https://zhuanlan.zhihu.com/p/*
+// @match        *://www.news.cn/*/**/*.html
+// @match        *://*.people.com.cn/*/**/*.html
 // @icon         https://res.wx.qq.com/a/fed_upload/9300e7ac-cec5-4454-b75c-f92260dd5b47/logo-mp.ico
 // @grant        none
 // @license MIT
@@ -24187,10 +24206,20 @@ var selector = {
   "blog.csdn.net": "#content_views",
   "segmentfault.com": ".article.fmt.article-content",
   "mp.weixin.qq.com": "#js_content",
-  "zhuanlan.zhihu.com": ".Post-RichText"
+  "zhuanlan.zhihu.com": ".Post-RichText",
+  "www.news.cn": "#detail",
+  "people.com.cn": ".rm_txt_con"
 };
 var themeId = localStorage.getItem("copy_tool_themeId") || "1";
 var hostname = window.location.hostname;
+var hostkey = "";
+
+for (var key in playform_processDocument) {
+  if (hostname.includes(key)) {
+    hostkey = key;
+    break;
+  }
+}
 
 function appendThemeStyle(id) {
   Array.from(document.querySelectorAll(".toolbox-option")).forEach(function (node) {
@@ -24216,7 +24245,7 @@ function appendThemeStyle(id) {
 }
 
 function init() {
-  var tpl = "\n  <button class='side-btn cp-btn' type=\"button\">\u62F7\u8D1D\u52A9\u624B</button>\n      <div class=\"preview-article-wrap cp-modal-wrapper\" style=\"height: 100vh;display:none\">\n    <div class=\"preview-article-mask mark\"></div>\n    <div class=\"preview-phone-wrapper\">\n      <div class=\"preview-phone-model preview-phone-model_5_8\">\n        <div class=\"preview-article-wrapper preview-article-wrapper_5_8\">\n          <div class=\"preview-article-title\">\n            <div class=\"preview-article-title-left\">\n              <img\n                src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAoCAYAAAD6xArmAAAACXBIWXMAACE4AAAhOAFFljFgAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAECSURBVHgB1dftDcIgEAZgCgvQDUg3cAPdwA0cwRF0JScwbtIN6ATFI9GEVkrv649vQoC79Om/5mrMP2UYhqvRDqA3WKkziskobPd8VoNLVA1eo5BRDNfQeZ5PIngLHSFsuIXmCwveQ1kwBiXDWJQEU1A0TEVRMAfdhbloE5agm7AUrcIa6A+shS7gEIK31saiNwF64KA59nuA56eU0lj08osuhhlXXrz3D9jOXdf5T+nY972JMb4MMQt4gmjhbl3Qwl2tqIG7rYYUd62mBG/CEnwX5uIomIOjYSpOgik4GcbiLBiDi4dC+NwGgJ+wQlG+q4yxNVxt8F7jqr8KJa4Kl/gbYsMMt+9Rs3AAAAAASUVORK5CYII=\"\n                style=\"width: 7px\"\n              />\n            </div>\n            <div class=\"preview-article-title-center\"></div>\n            <div class=\"preview-article-title-right\">\n              <img\n                src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADUAAAA2CAYAAABnctHeAAAACXBIWXMAACE4AAAhOAFFljFgAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAFqSURBVHgB7dTNTcMwGAbgL0nvSTZwW+WeI8cyAWICcuXIBIgRmICwAUzQbNBcUZSfDfCRQ374PhQkROPWacWJ95GqNI792o7tEAEAAAAAAAAAAPxrzrEKURTFwzAEbdvmTdNoOoFSKlgsFjFnNIJO8J3hOI4uiiI/VNc9FLJer7dd1+36vt+6rrvj+xuaabVa3XPb9zGjlnuaSfqVtpIh4+GMmsenTPWNK7VcLlN+K3uT4ODQdsW434QH87TXqeMkZVk+W2YomdDvct49WV3Xl1NtjCvFHV9NNnDdhCyZMvjFXJMlz/NiQ/bG1MY4qT/m21bk7RbQTMZJ8fK+TpXzW34hS6YMXu2U7El/U9s9NTXwTA+CIMj4csHLrMYizf9veR9nZElrnYdhKOd286P4oaqqxxkZH77vv41j+Vo1OU/8u+Nnk2f76Cedz6nsaQk755Ou5HJmhoxBxqI5IycAAAAAAAAAAAAw+QTAyYysfLNd8gAAAABJRU5ErkJggg==\"\n                style=\"width: 17px\"\n              />\n            </div>\n          </div>\n          <div class=\"preview-article-article preview-article-article_5_8\">\n          <div class=\"preview-article-article-header\">\n          <h1 class=\"rich_media_title\" id=\"js-title\"></h1>\n                  <div id=\"meta_content\" class=\"rich_media_meta_list\">\n                  <span id=\"js-author\" class=\"rich_media_meta rich_media_meta_text\"></span>               \n                  <span class=\"rich_media_meta rich_media_meta_nickname\" id=\"profileBt\" wah-hotarea=\"click\">\n                        <a href=\"javascript:void(0);\" class=\"wx_tap_link js_wx_tap_highlight weui-wa-hotarea\" id=\"js_name\">JS\u9177</a>\n                      </span>\n                      <em id=\"publish_time\" class=\"rich_media_meta rich_media_meta_text\">2022-01-26 19:02</em>\n                  </div>\n          </div>\n          <div id=\"nice\"></div>\n          </div>\n        </div>\n      </div>\n      <div class=\"preview-toolbox\">\n      <div class=\"copy-btn tool-item\">\n      <div class=\"cp-btn js-copy-wechat\">\u590D\u5236\u5230\u5FAE\u4FE1</div>\n      <div class=\"cp-btn js-copy-md\">\u590D\u5236 markdown</div>\n      \n  </div>\n          \n          <div class=\"tool-item\"><div class=\"tool-item-label\">\u4E0B\u8F7D</div><div>\n          <div class=\"cp-btn js-download-md\">\u4E0B\u8F7D markdown</div>\n          </div></div>\n          <div class=\"tool-item\"><div class=\"tool-item-label\">\u6392\u7248\u5DE5\u5177</div><div>\n          <a target=\"_black\" href=\"https://editor.mdnice.com/\" class=\"cp-btn-default\">mdnice</a>\n          <a target=\"_black\" href=\"https://editor.runjs.cool/\" class=\"cp-btn\">mdx-editor</a>\n          </div></div>\n          <div class=\"tool-item\"><div class=\"tool-item-label\">\u4E3B\u9898</div><div class=\"toolbox-select\">\n  \n  ".concat(themes.map(function (theme) {
+  var tpl = "\n  <button class='side-btn cp-btn' type=\"button\">\u62F7\u8D1D\u52A9\u624B</button>\n      <div class=\"preview-article-wrap cp-modal-wrapper\" style=\"height: 100vh;display:none\">\n    <div class=\"preview-article-mask mark\"></div>\n    <div class=\"preview-phone-wrapper\">\n      <div class=\"preview-phone-model preview-phone-model_5_8\">\n        <div class=\"preview-article-wrapper preview-article-wrapper_5_8\">\n          <div class=\"preview-article-title\">\n            <div class=\"preview-article-title-left\">\n              <img\n                src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAoCAYAAAD6xArmAAAACXBIWXMAACE4AAAhOAFFljFgAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAECSURBVHgB1dftDcIgEAZgCgvQDUg3cAPdwA0cwRF0JScwbtIN6ATFI9GEVkrv649vQoC79Om/5mrMP2UYhqvRDqA3WKkziskobPd8VoNLVA1eo5BRDNfQeZ5PIngLHSFsuIXmCwveQ1kwBiXDWJQEU1A0TEVRMAfdhbloE5agm7AUrcIa6A+shS7gEIK31saiNwF64KA59nuA56eU0lj08osuhhlXXrz3D9jOXdf5T+nY972JMb4MMQt4gmjhbl3Qwl2tqIG7rYYUd62mBG/CEnwX5uIomIOjYSpOgik4GcbiLBiDi4dC+NwGgJ+wQlG+q4yxNVxt8F7jqr8KJa4Kl/gbYsMMt+9Rs3AAAAAASUVORK5CYII=\"\n                style=\"width: 7px\"\n              />\n            </div>\n            <div class=\"preview-article-title-center\"></div>\n            <div class=\"preview-article-title-right\">\n              <img\n                src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADUAAAA2CAYAAABnctHeAAAACXBIWXMAACE4AAAhOAFFljFgAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAFqSURBVHgB7dTNTcMwGAbgL0nvSTZwW+WeI8cyAWICcuXIBIgRmICwAUzQbNBcUZSfDfCRQ374PhQkROPWacWJ95GqNI792o7tEAEAAAAAAAAAAPxrzrEKURTFwzAEbdvmTdNoOoFSKlgsFjFnNIJO8J3hOI4uiiI/VNc9FLJer7dd1+36vt+6rrvj+xuaabVa3XPb9zGjlnuaSfqVtpIh4+GMmsenTPWNK7VcLlN+K3uT4ODQdsW434QH87TXqeMkZVk+W2YomdDvct49WV3Xl1NtjCvFHV9NNnDdhCyZMvjFXJMlz/NiQ/bG1MY4qT/m21bk7RbQTMZJ8fK+TpXzW34hS6YMXu2U7El/U9s9NTXwTA+CIMj4csHLrMYizf9veR9nZElrnYdhKOd286P4oaqqxxkZH77vv41j+Vo1OU/8u+Nnk2f76Cedz6nsaQk755Ou5HJmhoxBxqI5IycAAAAAAAAAAAAw+QTAyYysfLNd8gAAAABJRU5ErkJggg==\"\n                style=\"width: 17px\"\n              />\n            </div>\n          </div>\n          <div class=\"preview-article-article preview-article-article_5_8\">\n          <div class=\"preview-article-article-header\">\n          <div class=\"rich_media_title\" id=\"js-title\"></div>\n                  <div id=\"meta_content\" class=\"rich_media_meta_list\">\n                  <span id=\"js-author\" class=\"rich_media_meta rich_media_meta_text\"></span>               \n                  <span class=\"rich_media_meta rich_media_meta_nickname\" id=\"profileBt\" wah-hotarea=\"click\">\n                        <a href=\"javascript:void(0);\" class=\"wx_tap_link js_wx_tap_highlight weui-wa-hotarea\" id=\"js_name\">JS\u9177</a>\n                      </span>\n                      <em id=\"publish_time\" class=\"rich_media_meta rich_media_meta_text\">2022-01-26 19:02</em>\n                  </div>\n          </div>\n          <div id=\"nice\"></div>\n          </div>\n        </div>\n      </div>\n      <div class=\"preview-toolbox\">\n      <div class=\"copy-btn tool-item\">\n      <div class=\"cp-btn js-copy-wechat\">\u590D\u5236\u5230\u5FAE\u4FE1</div>\n      <div class=\"cp-btn js-copy-md\">\u590D\u5236 markdown</div>\n      \n  </div>\n          \n          <div class=\"tool-item\"><div class=\"tool-item-label\">\u4E0B\u8F7D</div><div>\n          <div class=\"cp-btn js-download-md\">\u4E0B\u8F7D markdown</div>\n          </div></div>\n          <div class=\"tool-item\"><div class=\"tool-item-label\">\u6392\u7248\u5DE5\u5177</div><div>\n          <a target=\"_black\" href=\"https://editor.mdnice.com/\" class=\"cp-btn-default\">mdnice</a>\n          <a target=\"_black\" href=\"https://editor.runjs.cool/\" class=\"cp-btn\">mdx-editor</a>\n          </div></div>\n          <div class=\"tool-item\"><div class=\"tool-item-label\">\u4E3B\u9898</div><div class=\"toolbox-select\">\n  \n  ".concat(themes.map(function (theme) {
     return "<div class=\"toolbox-option \" data-id=".concat(theme.themeId, ">").concat(theme.name, "</div>");
   }).join(""), "\n          \n          </div>\n          </div>\n        <div class=\"tool-item\">\n          <div class=\"tool-item-label\">\u95EE\u9898\u53CD\u9988</div>\n          <div>\n            <div class=\"toolbox-hint\">\n              \u5173\u6CE8\u5FAE\u4FE1\u516C\u4F17\u53F7 <span class=\"toolbox-hint-highlight\">JS\u9177</span\n              > \u7559\u8A00\u53CD\u9988\n            </div>\n            <div>\u52A0\u6211\u5FAE\u4FE1\u597D\u53CB\u53CD\u9988\uFF0C\u5907\u6CE8\u6765\u6E90</div>\n          </div>\n        </div>\n      </div>\n    </div>\n    <div style=\"position: absolute; top: 44px; right: 44px\">\n      <img\n        class=\"close-btn\"\n        src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKIAAACiCAYAAADC8hYbAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAoqADAAQAAAABAAAAogAAAAAJENouAAAFNUlEQVR4Ae3cSVIjOxQFUP6f1IwdMGbLLOQ322BFRUmEFTYG28pe0jsZkZFu0pLeebfSBir89GQjQIAAAQIECBAgQIAAAQIECBAgQIAAAQIECBAgQIAAAQIECBAgQIAAAQIECBAgQIAAAQIECBAgQIAAAQIECBAgQIAAAQIECBAgQIAAAQIECBAgQIAAAQIECBAgQIAAAQIECBAgQIAAAQIECBAg0L/Ax8fHS9qf+69knwqyVTbbZ7YAsyTM17S/pz1vv9P+lvZfAUqfVWK2ORllq7xlu9dZg3nRWeAEmUEvt//SHWE8M33eyiZpzzbX2/vVqe5OEUia+e341iaMF5gJ6VYIi5+36QuvSTeTYP6cU95iCujlURiTaAJ5FMJs6PP1pPRdnZwA82fCe1voMCaYRyHMdm9XrO5OFaiEDhlGNlPTtPB84N8BmXw32eUR8GdmFmeLQ25pQNUPJonp81c4fr21ZUojhzFy7VtmavbYERsSsebZAdnzhZEaE6nWPTO02lwRGhShxtUCceRAIzdq5NqOzMxmc4/YsBFr2iwALQ08UuNGqqWljOy2lhEaOEINuzW85Yl6bmTPa285E4etrceG9rjmwxrc08Q9NbantfaUgWbW2kODe1hjMw3teSEtN7rltfXc82bX3mLDW1xTsw0caWEtNb6ltYzU425qaSEALayhm4aNvNAjg3Dk3CP3tNvajgjEEXN226BIC98zGHvOFamHw9S6R0D2mGOYhkQuZMugbDl25J4NW/sWgdlizGEboLCzwJrBWXOs8wrdCiOwRoDWGCMMuEJvCywJ0pLX3l6RZ8IKzAnUnNeEBVZ4vcCUYE05t34FziRwEpgQsPy1ePe2kF+bJ0grCqR01XwRphCuaG6oGwILwuhKeMPUwzMFZoRRCGdae9kDgQlhFMIHltdP/339gPsPBf56eIYTCGwlcLoa/p+OtZur4lbNiDpuSl7+yXlKCEtYhTFqaNaue0EIhXHtZkQdrzKE/6Tz8pXv3ubKGDVES+tOqap5O/73dF7NL72FcWlTor1+SgiLzek1rowFxHGZwJwQlhmFsUg4LhJYEsIysTAWCcdZAmuEsEwsjEXCcZLAmiEsEwtjkXCsEtgihGViYSwSjncFtgxhmVgYi4TjjwJ7hLBMLIxFwvGLwJ4hLBMLY5Fw/BQ4IoSFXhiLRPBjZQg3/VOcMAphzd+ONw1haYEwFolgxxauhNfkwngtMvj9FkNYyIWxSAx+7KHRPaxx8JhsW15PDe5prdt2bbDRe2xsj2seLDbrltNzQ3te+7pd7Hy0ERo5Qg2dx2jZ8kdq4Ei1LOtqZ68esXEj1tRZrKYtd+SGjVzbtC43fnaERkWosfGY3V9epAZFqvV+1xt7NmJjItbcWOy+LidyQyLX/jUFB9/TiKcnBkJ4sMB5emE8W+x6C/x3bibfTTZ9BPhtXja3bVZ/JmG/pf3etst/71+9sJUGTDA1X4n3ttJ0MYdJyM9p/30nhaFDWFJREcZs+FzOd5wokPBehLAOrSKML3UjOetHgQT8/kMYXQl/0LoTxvcfTvfQFIGE+3oRxvwWkz8z/poyRqRzs83JqHykyf+QXyMZbFprwsxv0z7nVCpnq2xWebrTCBAgQIAAAQIECBAgQIAAAQIECBAgQIAAAQIECBAgQIAAAQIECBAgQIAAAQIECBAgQIAAAQIECBAgQIAAAQIECBAgQIAAAQIECBAgQIAAAQIECBAgQIAAAQIECBAgQIAAAQIECBAgQIAAAQIECLQs8AdTUMnERHdP1gAAAABJRU5ErkJggg==\"\n        width=\"38\"\n        height=\"38\"\n      />\n    </div>\n  </div>\n  "); // __NUXT__.state.view.column.entry.article_info.mark_content
 
@@ -24228,10 +24257,9 @@ function init() {
 
 function getMd() {
   var md = lodash_get_default()(window, "__NUXT__.state.view.column.entry.article_info.mark_content");
-  var selectorStr = selector[hostname] || ".markdown-body";
+  var selectorStr = selector[hostkey] || ".markdown-body";
   var nodeConetnt = document.querySelector(selectorStr).cloneNode(true);
-  playform_processDocument[hostname] && playform_processDocument[hostname](nodeConetnt);
-  playform_processDocument["juejin.cn"](nodeConetnt);
+  playform_processDocument[hostkey] && playform_processDocument[hostkey](nodeConetnt);
   md = turndown(nodeConetnt.innerHTML);
   return md;
 }
@@ -24240,8 +24268,10 @@ function handleClick(e) {
   var target = e.target;
 
   if (target.className.includes("side-btn")) {
+    var _document$querySelect;
+
     document.querySelector(".cp-modal-wrapper").style.display = "block";
-    var selectorStr = selector[hostname] || ".markdown-body";
+    var selectorStr = selector[hostkey] || ".markdown-body";
     console.log(selectorStr);
     var nodes = document.querySelector(selectorStr).cloneNode(true).children;
     document.querySelector("#nice").innerHTML = "";
@@ -24278,11 +24308,11 @@ function handleClick(e) {
         markdownBody.appendChild(node);
       }
     });
-    var h1 = document.querySelector("h1");
+    var h1 = document.querySelectorAll("h1")[((_document$querySelect = document.querySelectorAll("h1")) === null || _document$querySelect === void 0 ? void 0 : _document$querySelect.length) - 1];
     var author = document.querySelector(".name");
     console.log(author);
-    document.querySelector("#js-title").innerHTML = h1 ? h1.innerText : "h1 获取标题失败";
-    document.querySelector("#js-author").innerHTML = author ? author.innerText : "作者获取失败";
+    document.querySelector("#js-title").innerHTML = h1 ? h1.innerText : "H1 获取标题失败";
+    document.querySelector("#js-author").innerHTML = author ? author.innerText : "作者";
     document.querySelector("#nice").appendChild(markdownBody);
     document.body.style.overflow = "hidden";
   }
@@ -24330,6 +24360,7 @@ function handleClick(e) {
 init();
 appendThemeStyle(themeId);
 document.addEventListener("click", handleClick);
+console.log(123);
 })();
 
 /******/ })()
