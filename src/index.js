@@ -3,7 +3,7 @@
 // @namespace    https://greasyfork.org/zh-CN/users/869004
 // @homepage    https://greasyfork.org/zh-CN/scripts/439663
 // @sourcecode    https://github.com/maqi1520/tampermonkey-copy-helper
-// @version      0.9.0
+// @version      0.9.2
 // @description  文章拷贝助手，掘金、简书、微信文章、知乎专栏、思否、CSDN、新华网、人民网、 文章一键拷贝 markdown，欢迎关注 前端公众号：JS酷
 // @author       #前端公众号：JS酷
 // @match        https://juejin.cn/post/*
@@ -12,8 +12,8 @@
 // @match        https://segmentfault.com/a/*
 // @match        https://mp.weixin.qq.com/s*
 // @match        https://zhuanlan.zhihu.com/p/*
-// @match        *://www.news.cn/*/**/*.html
-// @match        *://*.people.com.cn/*/**/*.html
+// @match        *://www.news.cn/*/**/*.htm*
+// @match        *://*.people.com.cn/*/**/*.htm*
 // @icon         https://res.wx.qq.com/a/fed_upload/9300e7ac-cec5-4454-b75c-f92260dd5b47/logo-mp.ico
 // @grant        none
 // @license MIT
