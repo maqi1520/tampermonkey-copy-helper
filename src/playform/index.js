@@ -12,6 +12,7 @@ export const processDocument = {
   "jianshu.com": jianshu.processDocument,
   "juejin.cn": juejin.processDocument,
   "blog.csdn.net": csdn.processDocument,
+  "sspai.com": csdn.processDocument,
   "segmentfault.com": sf.processDocument,
   "www.news.cn": news.processDocument,
   "people.com.cn": news.processDocument,

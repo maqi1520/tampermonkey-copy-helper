@@ -3,7 +3,7 @@
 // @namespace    https://greasyfork.org/zh-CN/users/869004
 // @homepage    https://greasyfork.org/zh-CN/scripts/439663
 // @sourcecode    https://github.com/maqi1520/tampermonkey-copy-helper
-// @version      0.9.2
+// @version      0.9.3
 // @description  文章拷贝助手，掘金、简书、微信文章、知乎专栏、思否、CSDN、新华网、人民网、 文章一键拷贝 markdown，欢迎关注 前端公众号：JS酷
 // @author       #前端公众号：JS酷
 // @match        https://juejin.cn/post/*
@@ -12,6 +12,7 @@
 // @match        https://segmentfault.com/a/*
 // @match        https://mp.weixin.qq.com/s*
 // @match        https://zhuanlan.zhihu.com/p/*
+// @match        https://sspai.com/post/*
 // @match        *://www.news.cn/*/**/*.htm*
 // @match        *://*.people.com.cn/*/**/*.htm*
 // @icon         https://res.wx.qq.com/a/fed_upload/9300e7ac-cec5-4454-b75c-f92260dd5b47/logo-mp.ico
@@ -47,6 +48,7 @@ const selector = {
   "zhuanlan.zhihu.com": ".Post-RichText",
   "www.news.cn": "#detail",
   "people.com.cn": ".rm_txt_con",
+  "sspai.com": ".wangEditor-txt",
 };
 
 let themeId = localStorage.getItem("copy_tool_themeId") || "1";
@@ -238,7 +240,7 @@ function handleClick(e) {
 
     document.querySelector("#js-title").innerHTML = h1
       ? h1.innerText
-      : "H1 获取标题失败";
+      : document.title;
     document.querySelector("#js-author").innerHTML = author
       ? author.innerText
       : "作者";
