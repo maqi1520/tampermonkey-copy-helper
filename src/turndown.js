@@ -27,19 +27,38 @@ turndownService.addRule("autoLanguage", {
     return Boolean(
       options.codeBlockStyle === "fenced" &&
         node.nodeName === "PRE" &&
-        node.firstChild &&
-        node.firstChild.nodeName === "CODE"
+        node.childNodes &&
+        Array.from(node.childNodes).some(node => node.nodeName === "CODE")
     );
   },
 
   replacement(content, node, options) {
-    const className = [node.className, node.firstElementChild?.className].join(
+    const beforeNodes = []
+    let codeEle = null
+    node.childNodes.forEach(child => {
+      if (codeEle) return
+      if (child.nodeName === "CODE") {
+        codeEle = child
+      } else {
+        beforeNodes.push(child)
+      }
+    })
+    // 删除code元素之前的节点
+    beforeNodes.forEach(node => node.remove?.())
+
+    if (!codeEle) {
+      codeEle = node.firstElementChild
+    }
+
+    const className = [node.className, codeEle.className].join(
       " "
     );
-    const language = (className.match(/language-(\S+)/) || [
-      null,
-      detectLanguage(className),
-    ])[1];
+    const language = 
+      codeEle.getAttribute('lang') ||
+      (className.match(/language-(\S+)/) || [
+        null,
+        detectLanguage(className),
+      ])[1];
     const code = node.textContent || "";
     const fence = options.fence;
 
